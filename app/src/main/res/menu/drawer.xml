@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_directory"
+            android:icon="@drawable/ic_contacts_24dp"
+            android:title="Directory"/>
+        <item
+            android:id="@+id/nav_podcast"
+            android:icon="@drawable/ic_mic_24dp"
+            android:title="Podcast" />
+        <item
+            android:id="@+id/nav_giving"
+            android:icon="@drawable/ic_attach_money_black_24dp"
+            android:title="Giving" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_24dp"
+            android:title="Settings"/>
+    </group>
+
+</menu>
