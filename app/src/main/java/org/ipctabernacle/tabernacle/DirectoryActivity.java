@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.MenuInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -34,6 +35,7 @@ import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
@@ -46,6 +48,8 @@ import java.util.List;
 
 public class DirectoryActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private SwipeRefreshLayout refreshDirectory;
 
     //ListView listView;
     //ArrayList<String> results = new ArrayList();
@@ -67,45 +71,18 @@ public class DirectoryActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ProgressDialog progress = new ProgressDialog(DirectoryActivity.this);
-        progress.setTitle("Loading");
-        progress.setMessage("Wait while loading...");
-        progress.show();
-
         Firebase.setAndroidContext(this);
-        final ListView listView = (ListView) findViewById(R.id.directory_list);
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.directory_list_item, R.id.myTextView);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
+        loaddirectory();
+
+        refreshDirectory = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_directory);
+        refreshDirectory.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), ContactDetailsActivity.class);
-                startActivity(intent);
-                //Toast.makeText(getApplicationContext(), "This is item " + position, Toast.LENGTH_LONG).show();
+            public void onRefresh() {
+                reloaddirectory();
             }
         });
 
-        new Firebase("https://tabernacle-directory.firebaseio.com/Members").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                adapter.add((String) dataSnapshot.child("name").getValue());
-            }
-
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                adapter.remove((String) dataSnapshot.child("name").getValue());
-            }
-
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            public void onCancelled(FirebaseError firebaseError) {
-            }
-        });
-
-        progress.dismiss();
         //loadDataBase();
         //viewList();
         // Create the adapter that will return a fragment for each of the three
@@ -221,6 +198,69 @@ public class DirectoryActivity extends AppCompatActivity
         return true;
     }
 
+    public void loaddirectory() {
+        final ListView listView = (ListView) findViewById(R.id.directory_list);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.directory_list_item, R.id.myTextView);
+        listView.setAdapter(adapter);
+
+        new Firebase("https://tabernacle-directory.firebaseio.com/Members").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                final MemberList memberList = dataSnapshot.getValue(MemberList.class);
+                adapter.add(memberList.getName());
+                //adapter.add((String) dataSnapshot.child("name").getValue());
+            }
+
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                adapter.remove((String) dataSnapshot.child("name").getValue());
+            }
+
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+
+            public void onCancelled(FirebaseError firebaseError) {
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), ContactDetailsActivity.class);
+                startActivity(intent);
+                //Toast.makeText(getApplicationContext(), "This is item " + position, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class MemberList {
+        private String name;
+        private String city;
+        private String otherdescription;
+
+        public MemberList() {}
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public String getOtherdescription() {
+            return otherdescription;
+        }
+    }
+
+    public void reloaddirectory() {
+        refreshDirectory.setColorSchemeResources(R.color.colorAccent);
+        loaddirectory();
+        refreshDirectory.setRefreshing(false);
+    }
     /*private void loadDataBase() {
         myDBHelper = new DataBaseHelper(this);
         try {

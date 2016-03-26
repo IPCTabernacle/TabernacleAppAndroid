@@ -26,7 +26,6 @@ public class ContactDetailsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_details);
-        Firebase.setAndroidContext(ContactDetailsActivity.this);
         final ImageView contactImage = (ImageView) findViewById(R.id.contact_picture);
         final TextView contactName = (TextView) findViewById(R.id.contact_name);
         final TextView contactNick = (TextView) findViewById(R.id.contact_nickname);
