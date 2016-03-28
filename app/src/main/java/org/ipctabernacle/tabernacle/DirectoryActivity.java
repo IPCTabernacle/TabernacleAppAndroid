@@ -229,6 +229,7 @@ public class DirectoryActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), ContactDetailsActivity.class);
+                intent.putExtra("pos", position);
                 startActivity(intent);
                 //Toast.makeText(getApplicationContext(), "This is item " + position, Toast.LENGTH_LONG).show();
             }
