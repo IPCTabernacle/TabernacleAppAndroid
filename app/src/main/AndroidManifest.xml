@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.ipctabernacle.tabernacle" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.ipctabernacle.tabernacle">
 
-    <uses-permission android:name="android.permission.INTERNET" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-sdk tools:overrideLibrary="com.firebase.ui"/>
 
     <application
         android:allowBackup="true"
@@ -35,6 +37,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ContactDetailsActivity"
             android:label="Details"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".DirectoryActivity2"
+            android:label="Directory"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 

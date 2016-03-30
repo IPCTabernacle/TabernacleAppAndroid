@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.MenuInflater;
 import android.view.View;
@@ -199,7 +200,7 @@ public class DirectoryActivity extends AppCompatActivity
     }
 
     public void loaddirectory() {
-        final ListView listView = (ListView) findViewById(R.id.directory_list);
+        final ListView listView = (ListView) findViewById(android.R.id.list);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.directory_list_item, R.id.myTextView);
         listView.setAdapter(adapter);
 

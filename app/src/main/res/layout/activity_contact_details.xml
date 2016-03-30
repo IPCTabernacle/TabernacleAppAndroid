@@ -68,10 +68,10 @@
             android:textSize="16sp"/>
 
         <ImageButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/contact_button_navigation"
-            android:src="@drawable/ic_directions_24dp"
+            android:src="@drawable/ic_directions_blue_400_36dp"
             android:layout_below="@id/contact_nickname"
             android:layout_alignParentRight="true"
             android:layout_marginRight="16dp"

@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void run() {
 
-                    Intent directory=new Intent(MainActivity.this,DirectoryActivity.class);
+                    Intent directory=new Intent(MainActivity.this,DirectoryActivity2.class);
                     startActivity(directory);
                 }
             }, 250);

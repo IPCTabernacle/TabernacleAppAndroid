@@ -55,8 +55,9 @@ public class ContactDetailsActivity extends AppCompatActivity {
 
         //Intent intent = getIntent();
         int clickedPosition = 1 + getIntent().getIntExtra("pos", 0);
+        String listname = getIntent().getStringExtra("listname");
 
-        String fbURL = "https://tabernacle-directory.firebaseio.com/Members/" + clickedPosition;
+        String fbURL = "https://tabernacle-directory.firebaseio.com/" + listname + clickedPosition;
 
         Firebase ref = new Firebase(fbURL);
 
@@ -113,7 +114,7 @@ public class ContactDetailsActivity extends AppCompatActivity {
                     }
                 });
 
-                callOptions.setIconAnimated(false);
+                createCustomAnimation();
 
                 com.github.clans.fab.FloatingActionButton callButton1 = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.call_button_1);
                 if (member.getHomephone() == null && member.getCellphone2() == null) {
@@ -157,16 +158,6 @@ public class ContactDetailsActivity extends AppCompatActivity {
                         startActivity(dialSecondary);
                     }
                 });
-
-                /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.contact_fab);
-                fab.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent dial = new Intent(Intent.ACTION_DIAL);
-                        dial.setData(Uri.parse("tel:" + member.getHomephone()));
-                        startActivity(dial);
-                    }
-                });*/
             }
 
             @Override
@@ -175,6 +166,29 @@ public class ContactDetailsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void createCustomAnimation() {
+        final FloatingActionMenu callOptions = (FloatingActionMenu) findViewById(R.id.call_options_button);
+        AnimatorSet set = new AnimatorSet();
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(callOptions.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(callOptions.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(callOptions.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(callOptions.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+        scaleOutX.setDuration(50);
+        scaleOutY.setDuration(50);
+        scaleInX.setDuration(150);
+        scaleInY.setDuration(150);
+        scaleInX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                callOptions.getMenuIconView().setImageResource(callOptions.isOpened() ? R.drawable.ic_call_white_24dp : R.drawable.ic_close_white_24dp);
+            }
+        });
+        set.play(scaleOutX).with(scaleOutY);
+        set.play(scaleInX).with(scaleInY).after(scaleOutX);
+        set.setInterpolator(new OvershootInterpolator(2));
+        callOptions.setIconToggleAnimatorSet(set);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -192,10 +206,6 @@ public class ContactDetailsActivity extends AppCompatActivity {
         private String cellphone2;
         private String other;
         private String otherdescription;
-
-        //public Member(String stringJSON) {
-
-        //}
 
         public Member() {
 

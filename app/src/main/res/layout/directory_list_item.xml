@@ -13,15 +13,37 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/contactPicture"
+        android:layout_marginTop="8dp"
+        android:layout_centerVertical="true">
+
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:minHeight="24dp"
         android:layout_toRightOf="@+id/contactPicture"
         android:id="@+id/myTextView"
         android:text="Contact Name"
         android:paddingLeft="16dp"
         android:layout_centerVertical="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
         />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_city_holder"
+        android:layout_toRightOf="@id/contactPicture"
+        android:layout_below="@id/myTextView"
+        android:layout_centerVertical="true"
+        android:paddingLeft="16dp"
+        android:text="City"
+        android:textStyle="italic"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
