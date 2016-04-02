@@ -1,6 +1,9 @@
 package org.ipctabernacle.tabernacle;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,13 +12,25 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.firebase.client.Firebase;
+import com.firebase.ui.FirebaseRecyclerAdapter;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,11 +44,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PodcastActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SeekBar.OnSeekBarChangeListener {
 
-    List<PodcastParser.Entry> entries = new ArrayList<>();
-    StringBuilder htmlString = new StringBuilder();
-    String result = "";
+    private Firebase mFirebaseRef;
+    private FirebaseRecyclerAdapter<PodcastList, PodcastViewHolder> mAdapter;
+    private Handler mHandler = new Handler();
+    private MediaPlayer mp;
+    private RelativeLayout playerPanel;
+    private SeekBar seekBar;
+    private ImageButton playPauseToggle;
+    private ImageButton skipBackward;
+    private ImageButton skipForward;
+    private ProgressBar loadingProgress;
+    private TextView currentTimeLabel;
+    private TextView totalDuration;
+    private RecyclerView recycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +75,102 @@ public class PodcastActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        loadPage();
+
+        mp = new MediaPlayer();
+        playerPanel = (RelativeLayout) findViewById(R.id.player_panel);
+        seekBar = (SeekBar) findViewById(R.id.podcast_seekbar);
+        loadingProgress = (ProgressBar) findViewById(R.id.podcast_loading_progress);
+        playPauseToggle = (ImageButton) findViewById(R.id.play_pause_toggle);
+        totalDuration = (TextView) findViewById(R.id.podcast_total_duration);
+        skipForward = (ImageButton) findViewById(R.id.podcast_skip_forward);
+        skipBackward = (ImageButton) findViewById(R.id.podcast_skip_back);
+        currentTimeLabel = (TextView) findViewById(R.id.podcast_current_position);
+
+        Firebase.setAndroidContext(this);
+        mFirebaseRef = new Firebase("https://incandescent-fire-1206.firebaseio.com/podcast/");
+
+        seekBar.setOnSeekBarChangeListener(this);
+
+        float scale = getResources().getDisplayMetrics().density;
+        final int dpAsPixels = (int) (72*scale + 0.5f);
+
+        recycler = (RecyclerView) findViewById(R.id.members_recycler);
+        recycler.setHasFixedSize(true);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        recycler.setLayoutManager(layoutManager);
+        mAdapter = new FirebaseRecyclerAdapter<PodcastList, PodcastViewHolder>(PodcastList.class, R.layout.podcast_cards, PodcastViewHolder.class, mFirebaseRef) {
+            @Override
+            public void populateViewHolder(final PodcastViewHolder podcastViewHolder, final PodcastList podcastList, int position) {
+                podcastViewHolder.pubDate.setText(podcastList.getPubDate());
+                podcastViewHolder.podcastTitle.setText(podcastList.getTitle());
+                podcastViewHolder.podcastDescription.setText(podcastList.getDescription());
+                podcastViewHolder.podcastDuration.setText(podcastList.getDuration());
+                podcastViewHolder.cardPlayButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playerPanel.setVisibility(View.VISIBLE);
+                        loadingProgress.setVisibility(View.VISIBLE);
+                        seekBar.setVisibility(View.VISIBLE);
+                        playPauseToggle.setImageResource(R.drawable.ic_play_circle_filled_grey_500_48dp);
+                        recycler.setPadding(0, 0, 0, dpAsPixels);
+                        try {
+                            mp.reset();
+                            mp.setDataSource(podcastList.getGuid());
+                            mp.prepareAsync();
+                            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    playPauseToggle.setImageResource(R.drawable.ic_pause_circle_filled_pink_48dp);
+                                    loadingProgress.setVisibility(View.GONE);
+                                    totalDuration.setText(podcastList.getDuration());
+                                    mp.start();
+                                    updateProgressBar();
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        };
+        recycler.setAdapter(mAdapter);
+        playPauseToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mp.isPlaying()) {
+                    mp.pause();
+                    playPauseToggle.setImageResource(R.drawable.ic_play_circle_filled_pink_48dp);
+                } else {
+                    mp.start();
+                    playPauseToggle.setImageResource(R.drawable.ic_pause_circle_filled_pink_48dp);
+                }
+            }
+        });
+        skipForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = mp.getCurrentPosition();
+                if (currentPosition + 30000 <= mp.getDuration()) {
+                    mp.seekTo(currentPosition + 30000);
+                } else {
+                    mp.seekTo(mp.getDuration());
+                }
+            }
+        });
+        skipBackward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = mp.getCurrentPosition();
+                if (currentPosition - 30000 >= 0) {
+                    mp.seekTo(currentPosition - 30000);
+                } else {
+                    mp.seekTo(0);
+                }
+            }
+        });
     }
 
     @Override
@@ -129,7 +249,148 @@ public class PodcastActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    private static final String URL = "http://ipctabernacle.org/component/podcastmanager/?format=raw&feedname=1";
+
+    public void updateProgressBar() {
+        mHandler.postDelayed(mUpdateTimeTask, 100);
+    }
+
+    private Runnable mUpdateTimeTask = new Runnable() {
+        @Override
+        public void run() {
+            long totalDuration = mp.getDuration();
+            long currentDuration = mp.getCurrentPosition();
+
+            currentTimeLabel.setText("" + Utilities.milliSecondsToTimer(currentDuration));
+            int progress = (Utilities.getProgressPercentage(currentDuration, totalDuration));
+            seekBar.setProgress(progress);
+            mHandler.postDelayed(this, 100);
+        }
+    };
+
+    @Override
+    public void onProgressChanged(SeekBar seekbar, int progress, boolean fromTouch) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+        int totalDuration = mp.getDuration();
+        int currentPosition = Utilities.progressToTimer(seekBar.getProgress(), totalDuration);
+        mp.seekTo(currentPosition);
+        updateProgressBar();
+    }
+
+    public static class Utilities {
+        public static String milliSecondsToTimer(long milliseconds) {
+            String finalTimerString = "";
+            String secondsString = "";
+
+            int hours = (int)(milliseconds/(1000*60*60));
+            int minutes = (int)(milliseconds % (1000*60*60))/(1000*60);
+            int seconds = (int)((milliseconds % (1000*60*60)) % (1000*60)/1000);
+            if (hours > 0) {
+                finalTimerString = hours + ":";
+            }
+            if (seconds < 10) {
+                secondsString = "0" + seconds;
+            } else {
+                secondsString = "" + seconds;
+            }
+
+            finalTimerString = finalTimerString + minutes + ":" + secondsString;
+            return finalTimerString;
+        }
+
+        public static int getProgressPercentage(long currentDuration, long totalDuration) {
+            Double percentage = (double) 0;
+            long currentSeconds = (int) (currentDuration/1000);
+            long totalSeconds = (int) (totalDuration/1000);
+            percentage = (((double) currentSeconds)/totalSeconds)*100;
+            return percentage.intValue();
+        }
+
+        public static int progressToTimer(int progress, int totalDuration) {
+            int currentDuration = 0;
+            totalDuration = (int) (totalDuration/1000);
+            currentDuration = (int) ((((double)progress)/100)*totalDuration);
+            return currentDuration*1000;
+        }
+    }
+
+    public static class PodcastViewHolder extends RecyclerView.ViewHolder {
+        TextView pubDate;
+        TextView podcastTitle;
+        TextView podcastDescription;
+        TextView podcastDuration;
+        Button cardPlayButton;
+
+        public PodcastViewHolder(View podcastView) {
+            super(podcastView);
+            pubDate = (TextView)podcastView.findViewById(R.id.podcast_date);
+            podcastTitle = (TextView)podcastView.findViewById(R.id.podcast_title);
+            podcastDescription = (TextView)podcastView.findViewById(R.id.podcast_description);
+            podcastDuration = (TextView)podcastView.findViewById(R.id.podcast_duration);
+            cardPlayButton = (Button)podcastView.findViewById(R.id.play_episode_button);
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class PodcastList {
+        private String title;
+        private String pubDate;
+        private String guid;
+        private String description;
+        private String duration;
+
+        public PodcastList() {}
+
+        public PodcastList(String title, String pubDate, String guid, String description) {
+            this.title = title;
+            this.pubDate = pubDate;
+            this.guid = guid;
+            this.description = description;
+            this.duration = duration;
+        }
+
+        public String getTitle() { return title; }
+
+        public String getPubDate() { return pubDate; }
+
+        public String getGuid() { return guid; }
+
+        public String getDescription() { return description; }
+
+        public String getDuration() { return duration; }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class MemberList {
+        private String name;
+        private String city;
+
+        public MemberList() {}
+
+        public MemberList(String name, String city) {
+            this.name = name;
+            this.city = city;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getCity() {
+            return city;
+        }
+    }
+
+    /*private static final String URL = "http://ipctabernacle.org/component/podcastmanager/?format=raw&feedname=1";
 
     private void loadPage() {
         new DownloadXmlTask().execute(URL);
@@ -325,7 +586,7 @@ public class PodcastActivity extends AppCompatActivity
                 }
             }
         }
-    }
+    }*/
 
 /*    public void onClickEp1 (View view) {
 
