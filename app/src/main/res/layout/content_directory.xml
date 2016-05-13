@@ -5,24 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.charleskoshy.churchapptest3.DirectoryActivity"
+    tools:context="org.ipctabernacle.tabernacle.DirectoryActivity"
     tools:showIn="@layout/app_bar_directory"
     android:layout_marginRight="16dp"
     android:layout_marginLeft="16dp">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipe_refresh_directory"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list">
 
-    <ListView
-        android:id="@+id/directory_list2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
-    </ListView>
+        </ListView>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+<!--        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/members_recycler">
+
+        </android.support.v7.widget.RecyclerView>-->
 
 </RelativeLayout>

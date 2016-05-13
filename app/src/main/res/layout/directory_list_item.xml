@@ -2,7 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     >
 
     <ImageView
@@ -25,7 +25,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/contactPicture"
-        android:id="@+id/myTextView"
+        android:id="@+id/contact_name_holder"
         android:text="Contact Name"
         android:paddingLeft="16dp"
         android:layout_centerVertical="true"
@@ -36,13 +36,18 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/contact_city_holder"
+        android:id="@+id/contact_subtitle_holder"
         android:layout_toRightOf="@id/contactPicture"
-        android:layout_below="@id/myTextView"
+        android:layout_below="@id/contact_name_holder"
         android:layout_centerVertical="true"
         android:paddingLeft="16dp"
-        android:text="City"
         android:textStyle="italic"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:id="@+id/id_holder"/>
 
     </LinearLayout>
 

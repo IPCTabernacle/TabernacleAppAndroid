@@ -5,86 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="org.ipctabernacle.tabernacle.PodcastActivity"
-    tools:showIn="@layout/app_bar_podcast"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/members_recycler"
+        android:id="@+id/podcast_recycler"
         android:paddingBottom="8dp"
         android:clipToPadding="false">
     </android.support.v7.widget.RecyclerView>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:id="@+id/player_panel"
-        android:layout_alignParentBottom="true"
-        android:background="#FFF"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/podcast_current_position"
-            android:layout_centerVertical="true"
-            android:text="0:00"
-            android:layout_marginLeft="16dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/podcast_total_duration"
-            android:layout_alignParentRight="true"
-            android:text="0:00"
-            android:layout_marginRight="16dp"
-            android:layout_centerVertical="true"/>
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/podcast_loading_progress"
-            android:indeterminate="true"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/play_pause_toggle"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_play_circle_filled_grey_500_48dp"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/podcast_skip_back"
-            android:src="@drawable/ic_replay_30_black_24dp"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/play_pause_toggle" />
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/podcast_skip_forward"
-            android:src="@drawable/ic_forward_30_black_24dp"
-            android:layout_toRightOf="@id/play_pause_toggle"
-            android:layout_centerVertical="true"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"/>
-
-    </RelativeLayout>
-
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/podcast_seekbar"
-        android:layout_above="@+id/player_panel"
-        android:layout_marginBottom="-8dp"
-        android:layout_marginLeft="-16dp"
-        android:layout_marginRight="-16dp"
-        android:visibility="gone"/>
 
 </RelativeLayout>

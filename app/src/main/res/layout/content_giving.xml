@@ -12,7 +12,7 @@
     tools:context="com.charleskoshy.churchapptest3.Giving"
     tools:showIn="@layout/app_bar_giving">
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -91,14 +91,15 @@
                 android:hint="Recurring"
                 android:layout_below="@id/one_time_radio"
                 android:layout_toRightOf="@id/amount_input"/>
-        </RelativeLayout>
+        </RelativeLayout>-->
         <Button
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:id="@+id/process_payment_button"
             android:layout_gravity="center"
             android:layout_marginTop="100dp"
             android:text="Process Donation"
             android:textColor="#FFFFFF"
             android:background="@color/colorAccent"/>
-    </LinearLayout>
+    <!--</LinearLayout>-->
 </RelativeLayout>

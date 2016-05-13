@@ -4,10 +4,15 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -28,14 +34,29 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
+
+        AppBarLayout appbar = (AppBarLayout) findViewById(R.id.home_appbar);
+        float heightDp = getResources().getDisplayMetrics().heightPixels / 2;
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)appbar.getLayoutParams();
+        lp.height = (int)heightDp;
+
+        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.home_collapsing_toolbar);
+        collapsingToolbar.setCollapsedTitleTextColor(getResources().getColor(R.color.colorWhite));
+        collapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.colorWhite));
+
+        ImageView backdrop = (ImageView) findViewById(R.id.home_backdrop);
+        backdrop.setImageResource(R.mipmap.tabcover);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        toggle.setDrawerIndicatorEnabled(true);
+        toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_18dp);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -88,7 +109,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void run() {
 
-                    Intent directory=new Intent(MainActivity.this,DirectoryActivity2.class);
+                    Intent directory=new Intent(MainActivity.this,DirectoryActivity.class);
                     startActivity(directory);
                 }
             }, 250);

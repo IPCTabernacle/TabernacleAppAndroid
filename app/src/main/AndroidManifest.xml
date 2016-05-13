@@ -3,16 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.ipctabernacle.tabernacle">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
 
-    <uses-sdk tools:overrideLibrary="com.firebase.ui"/>
+    <uses-sdk tools:overrideLibrary="com.firebase.ui, com.paypal.android.sdk.payments, com.braintreepayments.api, com.braintreepayments.api.core, com.paypal.android.sdk.onetouch.core, com.braintreepayments.api.dropin, com.braintreepayments.cardform"/>
 
     <application
+        android:name=".Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme.NoActionBar" >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -30,17 +32,21 @@
         <activity
             android:name=".GivingActivity"
             android:label="@string/title_activity_giving"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".PodcastActivity"
             android:label="@string/title_activity_podcast"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ContactDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"/>
+        <activity android:name=".MemberDetailsActivity"
             android:label="Details"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".DirectoryActivity2"
-            android:label="Directory"
+        <activity android:name=".LeaderDetailsActivity"
+            android:label="Details"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <service android:name=".MediaPlayerService"
+            android:icon="@drawable/ic_attach_money_black_24dp"
+            android:label="MediaPlayerService"/>
     </application>
 
 </manifest>

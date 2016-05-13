@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@mipmap/podcast_cover"
+        android:id="@+id/podcast_cover_notification"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/podcast_title_notification"
+        android:textAppearance="@style/NotificationTitleText"
+        android:text="Podcast Title"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/podcast_cover_notification"
+        android:layout_toLeftOf="@+id/play_pause_notification"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/NotificationText"
+        android:layout_toRightOf="@+id/podcast_cover_notification"
+        android:layout_below="@+id/podcast_title_notification"
+        android:id="@+id/podcast_date_title"
+        android:text="January 1st, 2016"
+        android:textAllCaps="true"
+        android:layout_marginLeft="16dp"/>
+
+    <ImageButton
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:id="@+id/play_pause_notification"
+        android:src="@drawable/ic_play_arrow_black_48dp"
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_alignParentRight="true"/>
+
+</RelativeLayout>
